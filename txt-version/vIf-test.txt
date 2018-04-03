@@ -1,0 +1,40 @@
+<div v-if="$route.name !=='home'" class="container row">
+                <div v-for="(artist, index) in musicOfArtist" class="col s4 card">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        <img class="activator" v-bind:src="artist.album.cover_big">
+                    </div>
+                    <div class="card-content">
+                        <span class="truncate card-title activator grey-text text-darken-4">{{artist.album.title}}</span>
+                        <p>Name/description</p>
+                    </div>
+                    <div class="card-reveal">
+                        <span class="card-title grey-text text-darken-4">Card Title<i class="material-icons right">close</i></span>
+                        <p>Here is some more information about this product that is only revealed once clicked on.</p>
+                    </div>
+                    <div class="card-action">
+                        <a class="waves-effect waves-light indigo darken-4 btn">Ecouter un extrait</a>
+                        <router-link    :class="{'active' : $route.name === 'albumDescription.template'}"
+                                        :to="'album-page'" 
+                                        >Consulter l'album</router-link> 
+                                        <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Album</a>
+                        <a class="waves-effect waves-light grey darken-2 btn">Voir la fiche de l'artiste</a>
+                    </div>
+                    <div class="card-action">
+                        <audio controls="controls">
+                            <source v-bind:src="artist.preview" type="audio/mp3"/>
+                            Votre navigateur ne supporte pas la balise AUDIO.
+                        </audio>
+                    </div>
+                </div>
+                <!-- Modal Structure 
+                <div id="modal1" class="modal">
+                        <div class="modal-content">
+                            <h4>Modal Header</h4>
+                            <p>{{artist.artist.tracklist}}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                        </div>
+                    </div>-->
+            </div>
+            <div><router-view></router-view></div>
