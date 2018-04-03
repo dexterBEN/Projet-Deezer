@@ -5,14 +5,14 @@
 
         data:function(){
             return {
-                    urlSrc: 'https://api.deezer.com/search?q=', //Url source de l'API DEEZER pour la recherche 
+                    urlSrc: 'search?q=', //Url source de l'API DEEZER pour la recherche
                     finalUrl:'',
                     orderOption:'',                            //Gère les options du selectionner par l'utilisateur
                     inputUser: "",                              //Entrée du formulaire de recherche
                     index:0,                                   //Inndex pour parcourir les tableau (utilisé dans le html pour le v-for)
                     musicOfArtist: []                          //Tableau qui sert à stocker l'objet JSON renvoyer par l'API
             };
-            
+
         },
 
         methods:{
@@ -41,6 +41,7 @@
                 $.ajax({
                     url:this.finalUrl,
                     success: response => {
+                        console.log(response)
 
                         this.musicOfArtist = response.data;
                         console.log(this.musicOfArtist);
@@ -81,7 +82,7 @@
                         <div class="card-action">
                             <a class="waves-effect waves-light indigo darken-4 btn">Ecouter un extrait</a>
                             <router-link    :class="{'active' : $route.name === 'albumPageComponent.template'}"
-                                            :to="{name: 'albumDescription', params: {  albumId: artist.album.title }}" 
+                                            :to="{name: 'albumDescription', params: {  albumId: artist.album.title }}"
                                             >Consulter l'album</router-link>
                                             <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Album</a>
                             <a class="waves-effect waves-light grey darken-2 btn">Voir la fiche de l'artiste</a>
@@ -93,7 +94,7 @@
                             </audio>
                         </div>
                     </div>
-                    <!-- Modal Structure 
+                    <!-- Modal Structure
                     <div id="modal1" class="modal">
                             <div class="modal-content">
                                 <h4>Modal Header</h4>
@@ -147,7 +148,7 @@
         },
         {
             name: 'albumDescription',
-            path: '/album-page', 
+            path: '/album-page',
             component: albumPageComponent ,
             props:{
                 musicOfArtist:true
@@ -163,4 +164,3 @@
         //el:'#deezer-app',
         router
     }).$mount('#deezer-app')
-    
