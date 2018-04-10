@@ -36,7 +36,7 @@ import { bus } from './Bus.js';
             request: function(){
                 //Élement pour la requête au serveur voir ici: https://www.w3schools.com/jquery/ajax_ajax.asp
                 this.finalUrl = this.concatenation();
-                bus.$emit('test');
+                bus.$emit('test'); //emission de l'évènement qui porte le nom 'test', exemple doc: https://fr.vuejs.org/v2/guide/instance.html#Les-hooks-de-cycle-de-vie-d%E2%80%99une-instance
                 var url = this.finalUrl;
                 console.log("url avant requête:"+url);
                 $.ajax({
