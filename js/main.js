@@ -1,16 +1,16 @@
-/*$(document).ready(function(){
-        $('.modal').modal();
-    });*/
+import { bus, msg } from './Bus.js';
+var bus = new Vue();
+
     var homePageComponent = Vue.component ('homePage',{
 
-        data:function(){
+        data: function(){
             return {
-                    urlSrc: 'search?q=', //Url source de l'API DEEZER pour la recherche
+                    urlSrc: 'https://api.deezer.com/search?q=', //Url source de l'API DEEZER pour la recherche
                     finalUrl:'',
                     orderOption:'',                            //Gère les options du selectionner par l'utilisateur
                     inputUser: "",                              //Entrée du formulaire de recherche
                     index:0,                                   //Inndex pour parcourir les tableau (utilisé dans le html pour le v-for)
-                    musicOfArtist: []                          //Tableau qui sert à stocker l'objet JSON renvoyer par l'API
+                    musicOfArtist:[]                          //Tableau qui sert à stocker l'objet JSON renvoyer par l'API
             };
 
         },
@@ -35,20 +35,28 @@
             },
             request: function(){
                 //Élement pour la requête au serveur voir ici: https://www.w3schools.com/jquery/ajax_ajax.asp
-
                 this.finalUrl = this.concatenation();
-
+                bus.$emit('test');
+                var url = this.finalUrl;
+                console.log(url);
                 $.ajax({
                     url:this.finalUrl,
+                    // dataType:'jsonp',
                     success: response => {
-                        console.log(response)
 
                         this.musicOfArtist = response.data;
                         console.log(this.musicOfArtist);
-                        console.log(this.musicOfArtist[0].album.tracklist);
+                        // console.log(this.musicOfArtist[0].album.tracklist);
                     }
-                })
-            }
+                });
+
+                /*fetchJsonp(url)
+                    .then(data => data.json())
+                    .then((data)=>{
+                        apiAnswer  = data;
+                        console.log('voici:'+apiAnswer);
+                    });*/
+            },
         },
 
 
@@ -88,43 +96,49 @@
                             <a class="waves-effect waves-light grey darken-2 btn">Voir la fiche de l'artiste</a>
                         </div>
                         <div class="card-action">
-                            <audio controls="controls">
-                                <source v-bind:src="artist.preview" type="audio/mp3"/>
+                            <audio v-bind:src="artist.preview" type="audio/mp3" controls="controls">
                                 Votre navigateur ne supporte pas la balise AUDIO.
                             </audio>
                         </div>
                     </div>
-                    <!-- Modal Structure
-                    <div id="modal1" class="modal">
-                            <div class="modal-content">
-                                <h4>Modal Header</h4>
-                                <p>{{artist.artist.tracklist}}</p>
-                            </div>
-                            <div class="modal-footer">
-                                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                            </div>
-                        </div>-->
                 </div>
                 <!--<div><router-view></router-view></div>-->
             </div>`
-        })
+        });
 
     var albumPageComponent = Vue.component('albumPage', {
 
-        props:['finalUrl', 'type'],
+        /*props:{
+            prop1:'corea',
+        },*/
 
-        data: function(homePageComponent){
-
+        /*data: function(){
+            var recup = bus.$on('')
             return{
-                listOfTrack:this.homePageComponent.data
-            };
+
+            }
+        },*/
+
+        created: function(){
+            /*var opaq = bus.$on('test', function () {
+                console.log("interception de l'évènement");
+            });
+            console.log(opaq);*/
+            bus.$on('test', function () {
+                console.log("interception de l'évènement");
+            });
+        },
+
+        methods:{
+
         },
 
         template:`
             <section>
                 <div>
-                    <h1>Album:{{artist.artist.name}}</h1>
+                    <h1>{{}}</h1>
                     <p>Artiste name:<a href="">link name</a></p>
+                    <button>clique</button>
                 </div>
 
                 <div>
@@ -150,9 +164,6 @@
             name: 'albumDescription',
             path: '/album-page',
             component: albumPageComponent ,
-            props:{
-                musicOfArtist:true
-            }
         }
     ];
 
@@ -160,7 +171,10 @@
         routes
     });
 
-    new Vue({
-        //el:'#deezer-app',
+    var app = new Vue({
         router
     }).$mount('#deezer-app')
+
+    export {
+        app
+    }
