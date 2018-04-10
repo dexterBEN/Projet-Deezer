@@ -1,18 +1,18 @@
-import { bus, msg } from './Bus.js';
-var bus = new Vue();
+import { bus } from './Bus.js';
+// var bus = new Vue();
 
     var homePageComponent = Vue.component ('homePage',{
 
         data: function(){
             return {
-                    urlSrc: 'https://api.deezer.com/search?q=', //Url source de l'API DEEZER pour la recherche
+                    urlSrc: 'https://api.deezer.com/search?q=', //Url source de l'API DEEZER pour la recherche 
                     finalUrl:'',
                     orderOption:'',                            //Gère les options du selectionner par l'utilisateur
                     inputUser: "",                              //Entrée du formulaire de recherche
                     index:0,                                   //Inndex pour parcourir les tableau (utilisé dans le html pour le v-for)
                     musicOfArtist:[]                          //Tableau qui sert à stocker l'objet JSON renvoyer par l'API
             };
-
+            
         },
 
         methods:{
@@ -22,14 +22,14 @@ var bus = new Vue();
                     console.log('Rentré un artiste');
                 }else{
                     urlFinal = this.urlSrc+this.inputUser;
-                    console.log(urlFinal);
+                    console.log("url final après construction:"+urlFinal);
                 }
 
                 if(this.orderOption === ""){
                     console.log("vous avez une liste par défaut non-ordonnée");
                 }else{
                     urlFinal = this.urlSrc+this.inputUser+'&order='+this.orderOption;
-                    console.log(urlFinal);
+                    console.log("url final après construction:"+urlFinal);
                 }
                 return urlFinal;
             },
@@ -38,7 +38,7 @@ var bus = new Vue();
                 this.finalUrl = this.concatenation();
                 bus.$emit('test');
                 var url = this.finalUrl;
-                console.log(url);
+                console.log("url avant requête:"+url);
                 $.ajax({
                     url:this.finalUrl,
                     // dataType:'jsonp',
@@ -46,7 +46,7 @@ var bus = new Vue();
 
                         this.musicOfArtist = response.data;
                         console.log(this.musicOfArtist);
-                        // console.log(this.musicOfArtist[0].album.tracklist);
+                        //console.log(this.musicOfArtist[0].album.tracklist);
                     }
                 });
 
@@ -90,7 +90,7 @@ var bus = new Vue();
                         <div class="card-action">
                             <a class="waves-effect waves-light indigo darken-4 btn">Ecouter un extrait</a>
                             <router-link    :class="{'active' : $route.name === 'albumPageComponent.template'}"
-                                            :to="{name: 'albumDescription', params: {  albumId: artist.album.title }}"
+                                            :to="{name: 'albumDescription', params: {  albumId: artist.album.title }}" 
                                             >Consulter l'album</router-link>
                                             <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Album</a>
                             <a class="waves-effect waves-light grey darken-2 btn">Voir la fiche de l'artiste</a>
@@ -112,25 +112,24 @@ var bus = new Vue();
             prop1:'corea',
         },*/
 
-        /*data: function(){
-            var recup = bus.$on('')
+        /*data:function(){
+            var recup = bus.$on("test");
             return{
+                recup
 
             }
         },*/
 
         created: function(){
-            /*var opaq = bus.$on('test', function () {
-                console.log("interception de l'évènement");
-            });
-            console.log(opaq);*/
             bus.$on('test', function () {
                 console.log("interception de l'évènement");
-            });
+            })
+            //console.log('test');
         },
 
-        methods:{
 
+        methods:{
+            
         },
 
         template:`
@@ -162,7 +161,7 @@ var bus = new Vue();
         },
         {
             name: 'albumDescription',
-            path: '/album-page',
+            path: '/album-page', 
             component: albumPageComponent ,
         }
     ];
