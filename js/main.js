@@ -1,4 +1,4 @@
-import { homePageComponent, albumPageComponent } from './components.js';                                                   
+import { homePageComponent, albumPageComponent } from './components.js';
 
 // console.log(message);
 
@@ -9,8 +9,9 @@ import { homePageComponent, albumPageComponent } from './components.js';
         },
         {
             name: 'albumDescription',
-            path: '/album-page', 
+            path: '/album-page',
             component: albumPageComponent ,
+            props: true
         }
     ];
 
