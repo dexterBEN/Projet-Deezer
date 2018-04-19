@@ -4,7 +4,7 @@ var homePageComponent = Vue.component ('homePage',{
 
     data: function(){
         return {
-                urlSrc: 'https://api.deezer.com/search?q=', //Url source de l'API DEEZER pour la recherche 
+                urlSrc: 'https://api.deezer.com/search?q=', //Url source de l'API DEEZER pour la recherche
                 urlTrack: 'https://api.deezer.com/album/',
                 finalUrl:'',
                 orderOption:'',                            //Gère les options du selectionner par l'utilisateur
@@ -14,7 +14,7 @@ var homePageComponent = Vue.component ('homePage',{
                 total: 0,
                 nextURL: ''
         };
-        
+
     },
 
     methods:{
@@ -43,7 +43,6 @@ var homePageComponent = Vue.component ('homePage',{
                 url:this.finalUrl,
                 // dataType:'jsonp',
                 success: response => {
-
                     this.musicOfArtist = response.data;
                     console.log(this.musicOfArtist);
                     //console.log(this.musicOfArtist[0].album.tracklist);
@@ -94,7 +93,7 @@ var homePageComponent = Vue.component ('homePage',{
             <div class="card-action">
                 <a class="waves-effect waves-light indigo darken-4 btn">Ecouter un extrait</a>
                 <router-link    :class="{'active' : $route.name === 'albumPageComponent.template'}"
-                                :to="{name: 'albumDescription', params: { trackList:element.album.id,  albumId:element.album.title, artistName:element.artist.name,albumCover: element.album.cover_big, albumTrack:element.album.tracklist}}" 
+                                :to="{name: 'albumDescription', params: { trackId:element.album.tracklist,  albumTitle:element.album.title, artistName:element.artist.name, artistePage:element.artist.link,albumCover: element.album.cover_big, albumPath:'https://www.deezer.com/album/'+element.album.id, albumTrack:element.album.tracklist}}"
                                 >Consulter l'album</router-link>
                                 <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Album</a>
                 <a class="waves-effect waves-light grey darken-2 btn">Voir la fiche de l'artiste</a>
@@ -112,46 +111,61 @@ var homePageComponent = Vue.component ('homePage',{
 
 var albumPageComponent = Vue.component('albumPage', {
 
-    props:['params'],
+    props:['trackId', 'albumPath'],
 
     data: function(){
-        
+        //var id = '119606';
         return{
-            musicOfArtist : [],
+            // urlTrack : 'https://api.deezer.com/album/53227232/tracks&output=jsonp',
+            trackList:[],
+            total: 0,
+            index:0,
+            nextURL: '',
         }
     },
     created: function(){
         bus.$on('test', (musicOfArtist) => {
             // console.log(musicOfArtist) ;
-            this.musicOfArtist = musicOfArtist;
+            return this.musicOfArtist = musicOfArtist;
         });
 
     },
 
-    /*methods:{
+    methods:{
+        requestTrack: function(){
+            console.log('Ceci est url venant de prop:'+this.trackId);
+            var urlForTrack = this.trackId+'&output=jsonp';
+            console.log(urlForTrack);
+            fetchJsonp(urlForTrack)
+                .then( data =>  data.json())
+                .then((data)=> {
 
-        check: function(got){
-            var qqchose = this.got;
-            console.log(got);
+                    this.trackList = data.data;
+                    this.total = data.total;
+                    this.nextURL = data.next;
+                    console.log(this.trackList);
+                })
         }
-        
-    },*/
+
+    },
 
     template:`
         <section>
             <div>
-                <h1>Album:{{$route.params.albumId}}</h1>
-                <p>Artiste:<a href="">{{$route.params.artistName}}</a></p>
+                <h1>Album:{{$route.params.albumTitle}}</h1>
+                <p>Artiste:<a v-bind:href="$route.params.artistePage">{{$route.params.artistName}}</a></p>
+                <button v-on:click="requestTrack()">Afficher les tracks</button>
             </div>
             <div class="d-flex justify-content-start">
                 <div><img v-bind:src="$route.params.albumCover"></div>
                 <ul class="collection with-header">
                     <li class="collection-header"><h4>First Names</h4></li>
-                    <div v-for="element in $route.params.trackList">
-                        <li class="collection-item">{{$route.params.trackList}}</li>
+                    <div v-for="(track,index) in trackList">
+                        <a v-bind:href="track.link"><li class="collection-item">{{track.title}}</li></a>
                     </div>
                 </ul>
             </div>
+            <a v-bind:href="$route.params.albumPath">Voir album</a>
         </section>
     `
 });
