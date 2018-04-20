@@ -1,4 +1,4 @@
-import { bus } from './Bus.js';
+import { bus } from './Bus.js'; //Sert de tunel pour transmettre les informations d'un composants à un autre 
 
 var homePageComponent = Vue.component ('homePage',{
 
@@ -49,6 +49,7 @@ var homePageComponent = Vue.component ('homePage',{
                 },
             });*/
 
+            //La requête fetch est plus adapter car elle ne nécessite pas de passer par une extension pour le navigateur
             fetchJsonp(url)
                 .then(data => data.json())
                 .then((data)=>{
@@ -57,12 +58,12 @@ var homePageComponent = Vue.component ('homePage',{
                     this.nextURL = data.next;
                     this.inputUser='';
                     console.log(this.musicOfArtist);
-                    bus.$emit('test', this.musicOfArtist);
+                    bus.$emit('test', this.musicOfArtist); // Permet de faire en sorte que d'autre composant ai accès au tableau complet de la recherche
                 });
         },
     },
 
-
+    //Les informations qui circule entre composants passe essentiellement par le router link
     template:`
     <div>
     <form class="container row">
@@ -95,8 +96,12 @@ var homePageComponent = Vue.component ('homePage',{
                 <router-link    :class="{'active' : $route.name === 'albumPageComponent.template'}"
                                 :to="{name: 'albumDescription', params: { trackId:element.album.tracklist,  albumTitle:element.album.title, artistName:element.artist.name, artistePage:element.artist.link,albumCover: element.album.cover_big, albumPath:'https://www.deezer.com/album/'+element.album.id, albumTrack:element.album.tracklist}}"
                                 >Consulter l'album</router-link>
-                                <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Album</a>
-                <a class="waves-effect waves-light grey darken-2 btn">Voir la fiche de l'artiste</a>
+
+                <a class="waves-effect waves-light btn modal-trigger" href="#modal1">Album</a>
+
+                <router-link    :class="{'active' : $route.name === 'artistPageComponent.template'}"
+                                :to="{name:'artistPage', params:{artistLink:element.artist.link, artistName:element.artist.name, artistImg:element.artist.picture_big}}"
+                                >Voir la fiche de l'artiste</router-link>
             </div>
             <div class="card-action">
                 <audio v-bind:src="element.preview" type="audio/mp3" controls="controls">
@@ -111,10 +116,9 @@ var homePageComponent = Vue.component ('homePage',{
 
 var albumPageComponent = Vue.component('albumPage', {
 
-    props:['trackId', 'albumPath'],
+    props:['trackId', 'albumPath'], // Récupération des informations véhiculé par les router-link, cela permet de les réutiliser dans les méthodes ou les data
 
     data: function(){
-        //var id = '119606';
         return{
             // urlTrack : 'https://api.deezer.com/album/53227232/tracks&output=jsonp',
             trackList:[],
@@ -132,6 +136,7 @@ var albumPageComponent = Vue.component('albumPage', {
     },
 
     methods:{
+        //Méthode pour récupérer la liste des musiques d'un album
         requestTrack: function(){
             console.log('Ceci est url venant de prop:'+this.trackId);
             var urlForTrack = this.trackId+'&output=jsonp';
@@ -170,7 +175,36 @@ var albumPageComponent = Vue.component('albumPage', {
     `
 });
 
+var artistPageComponent = Vue.component('artistPage',{
+
+    props:['artistLink'],
+    data: function(){
+        return{
+            urlFans:'https://api.deezer.com/artist/27/fans'
+        }
+    },
+
+    methods:{
+
+
+    },
+
+    template:`
+        <section>
+            <h1>{{$route.params.artistName}}</h1>
+            <div><img v-bind:src="$route.params.artistImg"></div>
+            <div>
+                <p>Nombre d'album: </p>
+                <p>Nombre de fan:  </p>
+            </div>
+            <div><a v-bind:href="$route.params.artistLink">Voir l'artiste sur Deezer</a></div>
+        </section>
+    `
+
+});
+
 export{
     homePageComponent,
-    albumPageComponent
+    albumPageComponent,
+    artistPageComponent
 }
